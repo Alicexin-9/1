@@ -1,20 +1,20 @@
-# 个人博客系统 📝
+# 个人博客系统
 
-一个简单的全栈个人博客系统，支持文章管理、Markdown 渲染、分类标签等功能。
+一个全栈个人博客系统，支持文章管理、Markdown 渲染、分类标签管理、用户认证等功能。
 
-## ✨ 功能特性
+## 功能特性
 
-- ✅ 首页文章列表（分页、时间倒序）
-- ✅ 文章详情页（Markdown 实时预览 + 阅读量统计）
-- ✅ 标签和分类系统
-- ✅ 搜索功能（按标题和内容搜索）
-- ✅ 关于我页面
-- ✅ 用户注册/登录
-- ✅ 后台管理（创建/编辑/删除文章）
-- ✅ 响应式设计（支持移动端）
-- ✅ 暗色模式切换
+- 首页文章列表（分页、时间倒序、分类/标签筛选）
+- 文章详情页（Markdown 渲染 + 阅读量统计 + 相关推荐）
+- 标签和分类系统（独立管理页面，删除前检查关联）
+- 搜索功能（按标题和内容模糊搜索）
+- 关于页面（站点统计信息）
+- 用户注册/登录（JWT 认证）
+- 后台管理（文章 CRUD、分类管理、标签管理、个人设置）
+- 响应式设计（支持移动端）
+- 暗色模式切换
 
-## 🛠️ 技术栈
+## 技术栈
 
 ### 前端
 - React 18 + TypeScript
@@ -22,126 +22,136 @@
 - Vite
 - React Router DOM
 - Axios
+- Lucide React（图标库）
 
 ### 后端
 - Node.js + Express
-- in-memory database (可扩展到 SQLite/MongoDB)
+- SQLite（better-sqlite3）
 - JWT 身份验证
+- bcryptjs 密码加密
+- express-validator 参数校验
+- marked Markdown 渲染
 
-## 📦 安装与运行
+## 快速开始
 
-### 方式一：克隆整个项目
+### 方式一：生产部署（单端口）
 
 ```bash
-# 克隆项目
-git clone <repo-url>
-cd blog-system
+# 一键部署
+chmod +x start.sh && ./start.sh
 
+# 或分步执行
+cd frontend && npm install && npm run build
+cd ../backend && npm install && node src/index.js
+```
+
+访问 `http://localhost:3001` 即可使用。
+
+### 方式二：开发模式（前后端热更新）
+
+```bash
 # 安装依赖
-cd frontend && npm install
-cd ../backend && npm install
+cd backend && npm install
+cd ../frontend && npm install
+cd ..
 
-# 启动服务
-# 终端 1 - 后端服务
-cd backend && npm run dev
+# 同时启动前后端
+npm run dev
 
-# 终端 2 - 前端服务  
-cd frontend && npm run dev
+# 或分别启动
+cd backend && npm run dev    # 后端 http://localhost:3001
+cd frontend && npm run dev   # 前端 http://localhost:3000
 ```
 
-### 方式二：直接访问预览
+### 部署到 Railway
 
-部署时会自动启动前后端服务，直接访问提供的预览链接即可使用。
+项目已包含 `railway.json` 配置，一键部署：
 
-## 🔐 默认账号
+1. 推送代码到 GitHub 仓库
+2. 打开 https://railway.app 并登录
+3. 点击 **New Project** -> **Deploy from GitHub repo**
+4. 选择本仓库
+5. Railway 自动检测配置，分配 `https://<project>.railway.app` 域名（自动 HTTPS）
 
-**管理员账号**:
-- 用户名：`admin`
-- 密码：`admin123`
+## 默认账号
 
-## 📂 项目结构
+| 角色 | 用户名 | 密码 |
+|------|--------|------|
+| 管理员 | `admin` | `admin123` |
+
+## 项目结构
 
 ```
-blog-system/
-├── backend/                # 后端服务
+personal-blog/
+├── backend/                  # 后端服务
 │   ├── src/
-│   │   └── index.js       # 主入口文件
+│   │   └── index.js         # 主入口（路由、数据库、认证、CRUD）
+│   ├── data/                 # SQLite 数据库文件（自动生成）
 │   └── package.json
-├── frontend/              # 前端应用
+├── frontend/                 # 前端应用
 │   ├── src/
-│   │   ├── components/    # 公共组件
-│   │   ├── pages/         # 页面组件
-│   │   ├── stores/        # 状态管理
-│   │   └── utils/         # 工具函数
+│   │   ├── components/       # 公共组件（Navbar、Footer）
+│   │   ├── pages/            # 页面组件（Home、PostDetail、Dashboard 等）
+│   │   ├── stores/           # 状态管理（authStore）
+│   │   ├── contexts/         # React Context（ThemeContext）
+│   │   ├── utils/            # 工具函数（api.ts）
+│   │   └── types/            # TypeScript 类型定义
 │   └── package.json
-└── README.md
+├── railway.json              # Railway 部署配置
+├── start.sh                  # 一键部署脚本
+└── package.json              # 根目录统一管理脚本
 ```
 
-## 🌐 API 接口
+## API 接口
 
-### 认证 API
-- `POST /api/auth/register` - 用户注册
-- `POST /api/auth/login` - 用户登录
+### 公开接口
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | /api/posts | 文章列表（支持 page、limit、categoryId、tagId、search） |
+| GET | /api/posts/:slug | 文章详情 |
+| GET | /api/categories | 分类列表 |
+| GET | /api/tags | 标签列表 |
+| GET | /api/about | 站点信息 |
 
-### 内容 API
-- `GET /api/posts` - 获取文章列表
-- `GET /api/posts/:slug` - 获取单篇文章详情
-- `GET /api/categories` - 获取分类列表
-- `GET /api/tags` - 获取标签列表
-- `GET /api/about` - 获取关于信息
+### 认证接口
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | /api/auth/register | 用户注册 |
+| POST | /api/auth/login | 用户登录 |
+| PUT | /api/auth/password | 修改密码 |
 
-### 管理 API（需认证）
-- `POST /api/posts/me/list` - 获取我的文章列表
-- `POST /api/posts` - 创建文章
-- `PUT /api/posts/:id` - 更新文章
-- `DELETE /api/posts/:id` - 删除文章
-- `GET /api/profile` - 获取个人资料
-- `PUT /api/profile` - 更新个人资料
+### 管理接口（需 JWT 认证）
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | /api/posts/me/list | 我的文章列表 |
+| POST | /api/posts | 创建文章 |
+| PUT | /api/posts/:id | 更新文章 |
+| DELETE | /api/posts/:id | 删除文章 |
+| POST | /api/categories | 创建分类 |
+| PUT | /api/categories/:id | 更新分类 |
+| DELETE | /api/categories/:id | 删除分类 |
+| POST | /api/tags | 创建标签 |
+| PUT | /api/tags/:id | 更新标签 |
+| DELETE | /api/tags/:id | 删除标签 |
+| GET | /api/profile | 获取个人资料 |
+| PUT | /api/profile | 更新个人资料 |
 
-## 🎨 UI 设计
+## 环境变量
 
-- **极简风格**: 简洁现代的界面设计
-- **响应式布局**: 完美适配手机、平板、桌面
-- **暗色模式**: 一键切换深色主题
-- **代码高亮**: Markdown 表格支持语法高亮
-
-## 📱 使用方法
-
-1. **阅读文章**: 访问首页浏览最新文章
-2. **查看详情**: 点击文章进入详情页，支持阅读量和相关推荐
-3. **管理内容**: 
-   - 登录后自动跳转至后台
-   - 点击"新建文章"创建内容
-   - 支持 Markdown 语法格式
-
-## 🔧 配置说明
-
-### 环境变量
-
-后端可通过 `.env` 文件配置：
+后端通过 `.env` 文件配置：
 
 ```env
 PORT=3001
-JWT_SECRET=your-secret-key
+JWT_SECRET=your-secret-key-here
 ```
 
-### 开发参数
+## 配置说明
 
 - 后端默认端口：`3001`
-- 前端默认端口：`3000`
-- 前端通过 Vite 代理转发 `/api` 请求到后端
+- 开发模式下前端默认端口：`3000`（Vite proxy 转发 `/api` 到后端）
+- 生产模式后端统一 serve 前端静态文件（`frontend/dist`）
+- 数据库位置：`backend/data/blog.db`（自动创建）
 
-## 📝 开发计划
+## License
 
-- [ ] 数据库持久化（SQLite/MongoDB 迁移）
-- [ ] 图片上传功能
-- [ ] 评论系统
-- [ ] 文章收藏功能
-- [ ] RSS 订阅
-- [ ] SEO 优化
-
-## 📄 License
-
-MIT License
-
----
+MIT

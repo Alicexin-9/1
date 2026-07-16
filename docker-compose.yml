@@ -1,15 +1,41 @@
 services:
-  blog:
-    build: .
-    container_name: personal-blog
-    ports:
-      - "3001:3001"
+  frontend-builder:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - frontend-dist:/app/dist
+    command: sh -c "npm ci && npm run build"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blog-backend
+    expose:
+      - "3001"
     environment:
       - PORT=3001
       - JWT_SECRET=${JWT_SECRET:-blog-secret-key-2026}
     volumes:
       - blog-data:/app/backend/data
     restart: unless-stopped
+    depends_on:
+      frontend-builder:
+        condition: service_completed_successfully
+
+  nginx:
+    image: nginx:alpine
+    container_name: blog-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - frontend-dist:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   blog-data:
+  frontend-dist:

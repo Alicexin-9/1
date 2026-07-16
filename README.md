@@ -65,14 +65,6 @@ cd frontend && npm run dev   # 前端 http://localhost:3000
 
 ### 部署到 Railway
 
-项目已包含 `railway.json` 配置，一键部署：
-
-1. 推送代码到 GitHub 仓库
-2. 打开 https://railway.app 并登录
-3. 点击 **New Project** -> **Deploy from GitHub repo**
-4. 选择本仓库
-5. Railway 自动检测配置，分配 `https://<project>.railway.app` 域名（自动 HTTPS）
-
 ## 默认账号
 
 | 角色 | 用户名 | 密码 |
@@ -97,7 +89,7 @@ personal-blog/
 │   │   ├── utils/            # 工具函数（api.ts）
 │   │   └── types/            # TypeScript 类型定义
 │   └── package.json
-├── railway.json              # Railway 部署配置
+├── docker-compose.yml         # Docker Compose 配置
 ├── start.sh                  # 一键部署脚本
 └── package.json              # 根目录统一管理脚本
 ```

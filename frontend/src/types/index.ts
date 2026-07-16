@@ -38,7 +38,7 @@ export interface Post {
   author_avatar?: string | null
   author_bio?: string | null
   view_count: number
-  is_published: number
+  is_published: boolean
   published_at?: string | null
   created_at: string
   updated_at: string

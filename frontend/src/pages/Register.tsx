@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Mail, User, Lock, UserPlus } from 'lucide-react'
 import axios from 'axios'
+import { useAuthStore } from '../stores/authStore'
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -13,12 +14,12 @@ export default function Register() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('两次输入的密码不一致')
       return
@@ -32,21 +33,14 @@ export default function Register() {
     setLoading(true)
 
     try {
-      await axios.post('/api/auth/register', {
+      const response = await axios.post('/api/auth/register', {
         username: formData.username,
         email: formData.email,
         password: formData.password
       })
-      
-      // Auto login after registration
-      const response = await axios.post('/api/auth/login', {
-        username: formData.username,
-        password: formData.password
-      })
-      
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
-      
+
+      login(response.data.user, response.data.token)
+
       navigate('/dashboard')
     } catch (err: any) {
       setError(err.response?.data?.error || err.message || '注册失败，请稍后重试')

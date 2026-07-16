@@ -9,6 +9,9 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import EditPost from './pages/EditPost'
+import CategoryManage from './pages/CategoryManage'
+import AdminTags from './pages/AdminTags'
+import Settings from './pages/Settings'
 import { useAuthStore } from './stores/authStore'
 import { ThemeProvider } from './contexts/ThemeContext'
 
@@ -46,6 +49,9 @@ export default function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<ProtectedComponent Component={Dashboard} />} />
             <Route path="/edit/:id?" element={<ProtectedComponent Component={EditPost} />} />
+            <Route path="/categories" element={<ProtectedComponent Component={CategoryManage} />} />
+            <Route path="/tags" element={<ProtectedComponent Component={AdminTags} />} />
+            <Route path="/settings" element={<ProtectedComponent Component={Settings} />} />
           </Routes>
         </main>
         <Footer />

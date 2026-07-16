@@ -12,3 +12,11 @@ build/
 *~
 coverage/
 .nyc_output/
+
+# SQLite database
+backend/data/*.db
+backend/data/*.db-wal
+backend/data/*.db-shm
+
+# Railway
+.railway/

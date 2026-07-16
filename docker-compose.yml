@@ -1,0 +1,15 @@
+services:
+  blog:
+    build: .
+    container_name: personal-blog
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-blog-secret-key-2026}
+    volumes:
+      - blog-data:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  blog-data:

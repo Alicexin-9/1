@@ -1,31 +1,17 @@
-# Stage 1: Build frontend
 FROM node:20-alpine AS frontend-builder
-
-WORKDIR /app
+WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm ci
-COPY frontend/ ./
+COPY frontend/ .
 RUN npm run build
 
-# Stage 2: Production image - single Node process serves API + static files
 FROM node:20-alpine
-
 WORKDIR /app
-
-# Backend production dependencies
 COPY backend/package*.json ./backend/
-RUN cd backend && npm ci --production
-
-# Backend source
-COPY backend/src/ ./backend/src/
-
-# Frontend build output
-COPY --from=frontend-builder /app/dist/ ./frontend/dist/
-
-# SQLite data directory
+RUN cd backend && npm ci --omit=dev
+COPY backend/ ./backend/
+COPY --from=frontend-builder /app/frontend/dist/ ./frontend/dist/
 RUN mkdir -p /app/backend/data
-
-ENV PORT=3001
 EXPOSE 3001
-
+ENV PORT=3001 NODE_ENV=production
 CMD ["node", "backend/src/index.js"]

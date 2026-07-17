@@ -1,6 +1,8 @@
 node_modules/
 .git/
 .gitignore
+Dockerfile
+.dockerignore
 *.md
 .env
 .env.local
@@ -13,26 +15,12 @@ node_modules/
 *~
 coverage/
 .nyc_output/
+.github/
 .railway/
 railway.json
 start.sh
 
-# Exclude backend dev dependencies
-backend/node_modules/
-backend/package-lock.json
-
-# Exclude frontend source (not needed in production)
-frontend/node_modules/
-frontend/src/
-frontend/public/
-frontend/package-lock.json
-frontend/tsconfig*.json
-frontend/vite.config.ts
-frontend/postcss.config.js
-frontend/tailwind.config.js
-frontend/index.html
-
-# SQLite database (keep local, not in image)
+# SQLite database
 backend/data/*.db
 backend/data/*.db-wal
 backend/data/*.db-shm
